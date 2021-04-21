@@ -42,7 +42,7 @@ EOF"
   }
 }
 
-esource "null_resource" "export_pgp_file" {
+resource "null_resource" "export_pgp_file" {
   provisioner "local-exec" {
     command = "gpg --armor --output public-key.gpg --export ${EMAIL}"
     environment = {
