@@ -16,13 +16,51 @@ resource "random_password" "password" {
   override_special = "_%@"
 }
 
+resource "null_resource" "init_pgp" {
+  provisioner "local-exec" {
+    command = "gpg -k"
+  }
+}
+
+resource "null_resource" "gen_gpg_key" {
+  provisioner "local-exec" {
+    command = "gpg2 --batch --gen-key <<EOF
+%no-protection
+Key-Type:1
+Key-Length:2048
+Subkey-Type:1
+Subkey-Length:2048
+Name-Real: ${NAME}
+Name-Email: ${EMAIL}
+Expire-Date:0
+EOF"
+
+    environment = {
+      NAME = aws_iam_user.cg-chris.name
+      EMAIL = aws_iam_user.cg-chris.name
+    }
+  }
+}
+
+esource "null_resource" "export_pgp_file" {
+  provisioner "local-exec" {
+    command = "gpg --armor --output public-key.gpg --export ${EMAIL}"
+    environment = {
+      NAME = aws_iam_user.cg-chris.name
+      EMAIL = aws_iam_user.cg-chris.name
+    }
+  }
+}
+
+data "local_file" "pgp_key" {
+  filename = "public-key.gpg"
+}
+
 resource "aws_iam_user_login_profile" "cg-chris" {
   user    = aws_iam_user.cg-chris.name
-  #pgp_key = "keybase:some_person_that_exists"
+  pgp_key = data.local_file.pgp_key.content_base64
 }
-output "password" {
-value="${aws_iam_user_login_profile.cg-chris.encrypted_password}"
-}
+
 
 resource "aws_iam_access_key" "cg-chris" {
   user = aws_iam_user.cg-chris.name
