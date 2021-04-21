@@ -10,14 +10,8 @@ resource "aws_iam_user" "cg-chris" {
 }
 
 # IAM Console access
-resource "null_resource" "init_pgp" {
-  provisioner "local-exec" {
-    command = "gpg -k"
-  }
-}
-
-// 
-resource "local_file" "key-gen-template" {
+ 
+resource "local_file" "key_gen_template" {
     content  = <<EOF
 %no-protection
 Key-Type:1
@@ -31,24 +25,16 @@ EOF
     filename = "key-gen-template"
 }
 
-resource "null_resource" "gen_gpg_key" {
+resource "null_resource" "gpg_key" {
   provisioner "local-exec" {
-    command = "gpg2 --batch --gen-key key-gen-template"
+    command = "gpg -k && gpg2 --batch --gen-key key-gen-template && gpg --armor --output public-key.gpg --export ${aws_iam_user.cg-chris.name}"
   }
-}
-
-resource "null_resource" "export_pgp_file" {
-  provisioner "local-exec" {
-    command = "gpg --armor --output public-key.gpg --export ${aws_iam_user.cg-chris.name}"
-  }
-  depends_on = [
-    null_resource.init_pgp,
-    null_resource.gen_gpg_key,
-  ]
+  depends_on = [local_file.key_gen_template]
 }
 
 data "local_file" "pgp_key" {
   filename = "public-key.gpg"
+  depends_on = [null_resource.gpg_key]
 }
 
 resource "aws_iam_user_login_profile" "cg-chris" {
@@ -57,8 +43,7 @@ resource "aws_iam_user_login_profile" "cg-chris" {
   #file("public-key.gpg").content_base64
   #data.local_file.pgp_key.content_base64
   depends_on = [
-    null_resource.export_pgp_file,
-    local_file.pgp_key
+    data.local_file.pgp_key
   ]
 }
 
