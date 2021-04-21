@@ -24,7 +24,7 @@ resource "null_resource" "init_pgp" {
 
 resource "null_resource" "gen_gpg_key" {
   provisioner "local-exec" {
-    command = "gpg2 --batch --gen-key <<EOF
+    command = gpg2 --batch --gen-key <<EOF
 %no-protection
 Key-Type:1
 Key-Length:2048
@@ -33,7 +33,7 @@ Subkey-Length:2048
 Name-Real: ${NAME}
 Name-Email: ${EMAIL}
 Expire-Date:0
-EOF"
+EOF
 
     environment = {
       NAME = aws_iam_user.cg-chris.name
