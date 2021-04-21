@@ -1,11 +1,18 @@
 #IAM User
 resource "aws_iam_user" "cg-chris" {
   name = "chris-${var.cgid}"
+  force_destroy = true  # just in case
   tags = {
     Name     = "cg-chris-${var.cgid}"
     Stack    = "${var.stack-name}"
     Scenario = "${var.scenario-name}"
   }
+}
+
+# IAM Console access
+resource "aws_iam_user_login_profile" "cg-chris" {
+  user    = aws_iam_user.cg-chris.name
+  pgp_key = "keybase:some_person_that_exists"
 }
 
 resource "aws_iam_access_key" "cg-chris" {
