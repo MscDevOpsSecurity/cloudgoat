@@ -49,7 +49,8 @@ data "local_file" "pgp_key" {
 
 resource "aws_iam_user_login_profile" "cg-chris" {
   user    = aws_iam_user.cg-chris.name
-  pgp_key = data.local_file.pgp_key.content_base64
+  pgp_key = file("${path.module}/public-key.gpg").content_base64
+  #data.local_file.pgp_key.content_base64
 }
 
 
