@@ -41,6 +41,10 @@ resource "null_resource" "export_pgp_file" {
   provisioner "local-exec" {
     command = "gpg --armor --output public-key.gpg --export ${aws_iam_user.cg-chris.name}"
   }
+  depends_on = [
+    null_resource.init_pgp,
+    null_resource.gen_gpg_key,
+  ]
 }
 
 data "local_file" "pgp_key" {
@@ -51,6 +55,9 @@ resource "aws_iam_user_login_profile" "cg-chris" {
   user    = aws_iam_user.cg-chris.name
   pgp_key = file("${path.module}/public-key.gpg").content_base64
   #data.local_file.pgp_key.content_base64
+  depends_on = [
+    null_resource.export_pgp_file,
+  ]
 }
 
 
