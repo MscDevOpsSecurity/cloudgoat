@@ -10,9 +10,18 @@ resource "aws_iam_user" "cg-chris" {
 }
 
 # IAM Console access
+resource "random_password" "password" {
+  length           = 8
+  special          = true
+  override_special = "_%@"
+}
+
 resource "aws_iam_user_login_profile" "cg-chris" {
   user    = aws_iam_user.cg-chris.name
-  pgp_key = "keybase:some_person_that_exists"
+  #pgp_key = "keybase:some_person_that_exists"
+}
+output "password" {
+value="${aws_iam_user_login_profile.cg-chris.encrypted_password}"
 }
 
 resource "aws_iam_access_key" "cg-chris" {
