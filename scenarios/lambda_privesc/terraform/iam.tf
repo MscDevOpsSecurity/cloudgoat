@@ -4,8 +4,8 @@ resource "aws_iam_user" "cg-chris" {
   force_destroy = true  # just in case
   tags = {
     Name     = "cg-chris-${var.cgid}"
-    Stack    = "${var.stack-name}"
-    Scenario = "${var.scenario-name}"
+    Stack    = "var.stack-name"
+    Scenario = "var.scenario-name"
   }
 }
 
@@ -72,8 +72,8 @@ resource "aws_iam_role" "cg-lambdaManager-role" {
 EOF
   tags = {
     Name = "cg-debug-role-${var.cgid}"
-    Stack = "${var.stack-name}"
-    Scenario = "${var.scenario-name}"
+    Stack = "var.stack-name"
+    Scenario = "var.scenario-name"
   }
 }
 
@@ -96,8 +96,8 @@ resource "aws_iam_role" "cg-debug-role" {
 EOF
   tags = {
     Name = "cg-debug-role-${var.cgid}"
-    Stack = "${var.stack-name}"
-    Scenario = "${var.scenario-name}"
+    Stack = "var.stack-name"
+    Scenario = "var.scenario-name"
   }
 }
 
