@@ -10,35 +10,30 @@ resource "aws_iam_user" "cg-chris" {
 }
 
 # IAM Console access
-resource "random_password" "password" {
-  length           = 8
-  special          = true
-  override_special = "_%@"
-}
-
 resource "null_resource" "init_pgp" {
   provisioner "local-exec" {
     command = "gpg -k"
   }
 }
 
-resource "null_resource" "gen_gpg_key" {
-  provisioner "local-exec" {
-    command = gpg2 --batch --gen-key <<EOF
+// 
+resource "local_file" "key-gen-template" {
+    content  = <<EOF
 %no-protection
 Key-Type:1
 Key-Length:2048
 Subkey-Type:1
 Subkey-Length:2048
-Name-Real: ${NAME}
-Name-Email: ${EMAIL}
+Name-Real: ${aws_iam_user.cg-chris.name}
+Name-Email: ${aws_iam_user.cg-chris.name}
 Expire-Date:0
 EOF
+    filename = "key-gen-template"
+}
 
-    environment = {
-      NAME = aws_iam_user.cg-chris.name
-      EMAIL = aws_iam_user.cg-chris.name
-    }
+resource "null_resource" "gen_gpg_key" {
+  provisioner "local-exec" {
+    command = "gpg2 --batch --gen-key key-gen-template"
   }
 }
 
