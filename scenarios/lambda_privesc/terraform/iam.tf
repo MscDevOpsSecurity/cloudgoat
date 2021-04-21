@@ -58,6 +58,7 @@ resource "aws_iam_user_login_profile" "cg-chris" {
   #data.local_file.pgp_key.content_base64
   depends_on = [
     null_resource.export_pgp_file,
+    local_file.pgp_key
   ]
 }
 
