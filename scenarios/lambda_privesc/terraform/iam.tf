@@ -39,11 +39,7 @@ resource "null_resource" "gen_gpg_key" {
 
 resource "null_resource" "export_pgp_file" {
   provisioner "local-exec" {
-    command = "gpg --armor --output public-key.gpg --export ${EMAIL}"
-    environment = {
-      NAME = aws_iam_user.cg-chris.name
-      EMAIL = aws_iam_user.cg-chris.name
-    }
+    command = "gpg --armor --output public-key.gpg --export ${aws_iam_user.cg-chris.name}"
   }
 }
 
