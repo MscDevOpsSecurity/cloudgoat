@@ -4,7 +4,7 @@ variable "profile" {
 }
 #Required: AWS Region
 variable "region" {
-  default = "us-east-1"
+  default = "eu-west-1"
 }
 #Required: CGID Variable for unique naming
 variable "cgid" {
