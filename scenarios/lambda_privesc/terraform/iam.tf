@@ -27,7 +27,7 @@ EOF
 
 resource "null_resource" "gpg_key" {
   provisioner "local-exec" {
-    command = "gpg -k && gpg2 --batch --gen-key key-gen-template && gpg --armor --output public-key.gpg --export ${aws_iam_user.cg-chris.name}"
+    command = "gpg -k && gpg --batch --gen-key key-gen-template && gpg --armor --output public-key.gpg --export ${aws_iam_user.cg-chris.name}"
   }
   depends_on = [local_file.key_gen_template]
 }
